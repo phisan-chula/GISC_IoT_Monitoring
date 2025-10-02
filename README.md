@@ -1,10 +1,12 @@
 # GISC_IoT_Monitoring
 GISC_IoT_Monitoring
 
+Current thresholds for 'normal' (green), 'alarm'(yellow) and 'alert' (red)
+
 ```python
 usage: VachiraSinkhole.py [-h] [-d DATE_TIME] [-p]
 
-Plot SenCeive CSV by sensors
+Plot SenCeive with accumulated rainfall (24-hour) as CSV by sensors
 
 options:
   -h, --help            show this help message and exit
