@@ -1,7 +1,8 @@
 # GISC_IoT_Monitoring
 GISC_IoT_Monitoring
 
-Current thresholds for 'normal' (green), 'alarm'(yellow) and 'alert' (red)
+Current thresholds for 'normal' (green), 'alarm'(yellow) and 'alert' (red)  
+
 ```toml
 [RAIN]
 color = "blue"
@@ -29,7 +30,8 @@ unit = "mm"
 normal = 5
 alert  = 20
 alarm  = 100
-``
+```
+
 
 
 ```python
