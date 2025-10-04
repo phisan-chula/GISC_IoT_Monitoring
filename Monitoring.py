@@ -31,7 +31,8 @@ class Monitoring( MonitoringBase):
         COLORS = ['green', 'orange', 'red'] 
         for uplo in [upper,lower]:
             for level, color  in zip(uplo, COLORS): 
-                ax.axhline( y=level, color=color,  linestyle=(0, (10, 5)), linewidth=1)
+                ax.axhline( y=level, color=color,  linestyle=(0, (10, 5)), 
+                           linewidth=1)
 
     def plot_daily_data( self, args, ax ):
         daily, ss_type, title, dfx, dfy = args
@@ -39,7 +40,7 @@ class Monitoring( MonitoringBase):
         #import pdb ;pdb.set_trace()
         if len(dfx)>0:
             ax.plot( dfx, dfy, lw=cfg.linewidth,
-            color=cfg.color,           # your configured color
+            color='black',           # your configured color
             marker="o",                # small circle markers
             markersize = cfg.markersize, alpha=0.6 )
             self.plot_warning( ss_type, dfy, ax, cfg)

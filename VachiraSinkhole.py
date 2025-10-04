@@ -13,9 +13,7 @@ from Monitoring import *
 import argparse
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="Plot SenCeive CSV by sensors")
-    #parser.add_argument( "csv_file", type=Path,
-    #    help="File CSV input")
+        description="Plot SenCeive CSV by sensors and accummulated rainfall")
     parser.add_argument( "-d", "--date_time",type=str, default=None,
         help="วันเวลาในรูปแบบ YYYY-MM-DD")
     parser.add_argument("-p", "--popup", action="store_true",

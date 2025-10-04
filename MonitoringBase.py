@@ -60,16 +60,18 @@ class MonitoringBase:
             raise FileNotFoundError("No valid rainfall CSV files found in given list")
         dfs = list()
         for fi in files:
-            df = pd.read_csv( fi , index_col=False, encoding="latin1" )
+            df = pd.read_csv( fi , index_col=False, encoding="latin1", engine='python' )
+            #print( len(df.columns), fi)
+            #print(  df.columns )
             df["Units"] = ( df["Units"].replace({
                 "ýý": "m",    # 
                 "ýýc": "°C",   # degrees Celsius (temperature)
             }))
+            df = df.loc[:, ~df.columns.str.contains("^Unnamed")]
             dfs.append( df )
         df = pd.concat( dfs, ignore_index=True)
 
-        df["Sample Time"] = pd.to_datetime(df["Sample Time"])
-        #df["BKK_dt"] = df["Sample Time"].dt.tz_localize("Asia/Bangkok")
+        df["Sample Time"] = pd.to_datetime(df["Sample Time"], format='mixed') 
         df["datetime"] = df["Sample Time"]   # already BKK time
         df["date"] = df["datetime"].dt.date
         #import pdb ;pdb.set_trace()
@@ -78,12 +80,10 @@ class MonitoringBase:
         print(counts)
         self.dfSENSOR = df
 
-    def PlotDaily( self, DAILY ):
-        dfRAIN = self.dfRAIN[self.dfRAIN["date"]==pd.to_datetime(DAILY).date()]
+    def _GroupingTiltSS(self, DAILY):
         df = self.dfSENSOR[self.dfSENSOR["date"]==pd.to_datetime(DAILY).date()]
         #import pdb ;pdb.set_trace()
-        df_tilt = df[df["Sensor Type"].isin([
-            "Tilt (x-axis) Raw", "Tilt (y-axis) Raw", ])]
+        df_tilt = df[df["Sensor Type"].isin([ "Tilt (x-axis) Raw", "Tilt (y-axis) Raw" ])]
         GROUPBY =  ["Location Description", "Node Id", "Sensor Type"]
         df_tilt_stats = (
             df_tilt.groupby( GROUPBY )["Value"]
@@ -91,7 +91,6 @@ class MonitoringBase:
             .reset_index()
         )
         print(df_tilt_stats)
-
         order = ["IX-Tilt-Demo 2", "IX-Tilt-Demo 3", "IX-Tilt-Demo 4", "ODS-Demo"]
         df_tilt_stats = df_tilt_stats.copy()
         df_tilt_stats["Location Description"] = pd.Categorical(
@@ -108,20 +107,26 @@ class MonitoringBase:
         counts = df_tilt_ss_grp.size().reset_index(name="Count")
         print( f'{30*"="} {DAILY} {30*"="}' )
         print( counts)
+        return df_tilt_ss_grp
 
-        n_rows = len(counts) + 1   #  accum rain first
+
+    def PlotDaily( self, DAILY ):
+        df_tilt_ss_grp = self._GroupingTiltSS( DAILY)
+        #import pdb ; pdb.set_trace()
+        n_rows = len(df_tilt_ss_grp) + 1   #  accum rain first
         #####################################################################
         fig, axes = plt.subplots(n_rows, 1, figsize=(12, 2*n_rows),
                                  sharex=True, constrained_layout=True)
         if n_rows == 1:
             axes = [axes]
+
+        dfRAIN = self.dfRAIN[self.dfRAIN["date"]==pd.to_datetime(DAILY).date()]
         args =  [ DAILY, 'RAIN', 'Rain accumulated 24hr',
-                    self.dfRAIN['datetime'],self.dfRAIN['ฝน 24 ชม.'] ]
-        self.plot_daily_data( args,  axes[0] )
+                    dfRAIN['datetime'],dfRAIN['ฝน 24 ชม.'] ]
+        self.plot_daily_data( args, axes[0] )
         for cnt, ss_grp in enumerate(df_tilt_ss_grp,start=1):
-            #import pdb ;pdb.set_trace()
-            SS_TYPE = 'ODS' if cnt>6 else 'TILT' 
-            args = [ DAILY, SS_TYPE, ss_grp[0], 
+            #SS_TYPE = 'ODS' if cnt>6 else 'TILT' 
+            args = [ DAILY, 'TILT' , ss_grp[0], 
                     ss_grp[1]['datetime'], ss_grp[1]['Value'] ] 
             self.plot_daily_data( args, axes[cnt] )
         dt_obj = datetime.strptime(DAILY, "%Y-%m-%d")
