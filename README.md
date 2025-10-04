@@ -5,7 +5,6 @@ Current thresholds for 'normal' (green), 'alarm'(yellow) and 'alert' (red)
 
 ```toml
 [RAIN]
-color = "blue"
 linewidth = 1
 markersize = 2.0
 unit = "mm"   # daily or accumulated rainfall
@@ -14,7 +13,6 @@ alert  = 60
 alarm  = 100 
 
 [TILT]
-color = "green"
 linewidth = 0.5
 markersize = 3.0
 unit = "mrad"
@@ -23,7 +21,6 @@ alert  = 3
 alarm  = 5
 
 [ODS]
-color = "red"
 linewidth = 0.5
 markersize = 3.0
 unit = "mm"
